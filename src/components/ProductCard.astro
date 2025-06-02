@@ -1,0 +1,23 @@
+---
+import Bag from "./svg/Bag.astro";
+import type { Product } from "../types/ProductType.ts";
+
+interface Props {
+    data: Product;
+}
+
+const { data } = Astro.props;
+---
+
+<a href=`/product/${data.id}`>
+    <article>
+        <img src={data.imageUrl} alt="" />
+        <div class="text">
+            <p>{data.name}</p>
+            <h3>${data.price}</h3>
+        </div>
+        <div class="button">
+            <Bag />
+        </div>
+    </article>
+</a>

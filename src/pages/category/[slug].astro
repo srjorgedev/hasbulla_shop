@@ -1,0 +1,163 @@
+---
+import type { GetStaticPaths } from "astro";
+import { allProducts, categories } from "../../data";
+
+export const getStaticPaths = (() => {
+    return categories.map((cat) => ({
+        params: { slug: cat.toLowerCase() },
+    }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const category = allProducts.find((p) => {
+    return p.category.some((cat) => cat.toLowerCase() === slug.toLowerCase());
+});
+
+if (!category) {
+    throw new Error(`Producto con ID '${slug}' no encontrado`);
+}
+
+const products = allProducts.filter((p) => {
+    return p.category.some((cat) => cat.toLowerCase() === slug.toLowerCase());
+});
+
+console.log(products);
+
+import Layout from "../../layout/Layout.astro";
+import Like from "../../components/svg/Like.astro";
+import ProductCard from "../../components/ProductCard.astro";
+---
+
+<Layout title={"Hasbulla - " + slug.toUpperCase()}>
+    <main>
+        <div class="jump"></div>
+        <p class="breadcrumb">
+            <span class="home-span"> INICIO</span> / <span class="category"
+                >{slug.toUpperCase()}</span
+            >
+        </p>
+        <section class="clothes">
+            {
+                products.map((product) => {
+                    return <ProductCard data={product} />;
+                })
+            }
+        </section>
+    </main>
+</Layout>
+
+<style>
+    .jump {
+        height: 14rem;
+    }
+
+    .breadcrumb {
+        font-size: 1.5rem;
+        color: #232323;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        cursor: pointer;
+
+        span.category {
+            color: #0d00a0;
+            font-weight: 700;
+        }
+    }
+
+    section.clothes {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+
+        article {
+            width: 100%;
+            height: 40rem;
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            cursor: pointer;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+
+                position: relative;
+            }
+
+            div.button {
+                position: absolute;
+                bottom: 1.75rem;
+                right: 1.75rem;
+                width: 64px;
+                aspect-ratio: 1 / 1;
+                background-color: #868686;
+                border: 2px solid #f1f1f1;
+                color: #333;
+                font-size: 1.5rem;
+                border-radius: 1.5rem;
+                cursor: pointer;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.3s ease;
+
+                &:hover {
+                    background-color: #363636;
+                }
+            }
+
+            div.text {
+                position: absolute;
+                bottom: 0.75rem;
+                left: 0.75rem;
+                width: 100%;
+                padding: 1rem;
+                color: #f1f1f1;
+                font-size: 1.5rem;
+                z-index: 2;
+
+                h3 {
+                    font-size: 3rem;
+                    font-weight: 600;
+                    line-height: 1;
+                    color: #f1f1f1;
+                    margin-top: 0.5rem;
+                }
+
+                p {
+                    font-size: 2rem;
+                    line-height: 1;
+                    color: #ebe7e7;
+                }
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0) 60%,
+                    rgba(0, 0, 0, 0.7)
+                );
+            }
+        }
+    }
+</style>
+
+<script>
+    const breadcrumb = document.querySelector<HTMLElement>(".breadcrumb");
+    const homeSpan = document.querySelector<HTMLElement>(".home-span");
+
+    if (breadcrumb && homeSpan) {
+        homeSpan.onclick = () => {
+            window.location.href = "/";
+        };
+    }
+</script>

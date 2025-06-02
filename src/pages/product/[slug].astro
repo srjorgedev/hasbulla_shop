@@ -1,0 +1,221 @@
+---
+import type { GetStaticPaths } from "astro";
+import { allProducts } from "../../data";
+
+export const getStaticPaths = (() => {
+    return allProducts.map((product) => ({
+        params: { slug: product.id },
+    }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const product = allProducts.find((p) => p.id === slug);
+
+if (!product) {
+    throw new Error(`Producto con ID '${slug}' no encontrado`);
+}
+
+import Layout from "../../layout/Layout.astro";
+import Like from "../../components/svg/Like.astro";
+---
+
+<Layout title={"Hasbulla - " + product.name}>
+
+    <main>
+        <aside>
+            <img src={product.imageUrl} alt={product.name} />
+        </aside>
+        <section>
+            <h1>{product.name}</h1>
+            <p class="desc">{product.description}</p>
+
+            <p>Colores disponibles</p>
+            <div class="colors">
+                {
+                    product.colors &&
+                        product.colors.length > 0 &&
+                        product.colors.map((color) => (
+                            <span
+                                class="dot-color"
+                                style={`background-color: ${color};`}
+                            />
+                        ))
+                }
+            </div>
+
+            <p>Tallas</p>
+            <div class="sizes">
+                {
+                    product.sizes &&
+                        product.sizes.length > 0 &&
+                        product.sizes.map((size) => (
+                            <span class="dot-size">{size}</span>
+                        ))
+                }
+            </div>
+
+            <p class="price">${product.price}</p>
+
+            {
+                product.stockQuantity > 0 ? (
+                    <p>{product.stockQuantity} elementos disponibles</p>
+                ) : (
+                    <p style="color: red;">Sin stock</p>
+                )
+            }
+
+            <div>
+                <span class="like">
+                    <Like />
+                </span>
+                <button
+                    class={`buy ${product.stockQuantity > 0 ? "enable" : "disabled"}`}
+                    >COMPRAR</button
+                >
+            </div>
+        </section>
+    </main>
+
+    <style>
+        main {
+            width: 100%;
+            margin-top: 10rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+
+            section {
+                display: flex;
+                gap: 0;
+                flex-direction: column;
+
+                div {
+                    width: 100%;
+                    display: flex;
+                    gap: 0.5rem;
+                    margin-top: 0.5rem;
+
+                    span:not(.dot-size) {
+                        height: 100%;
+                        aspect-ratio: 1 / 1;
+                        border-radius: 1rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #232323;
+                        cursor: pointer;
+                        transition: scale 0.2s ease;
+
+                        svg {
+                            transition: scale 0.2s ease;
+                        }
+
+                        &:active {
+                            scale: 0.96;
+                        }
+                        
+                        &:hover svg {
+                            scale: 1.1;
+                        }
+                    }
+
+                    button {
+                        height: 5rem;
+                        font-size: 2rem;
+                        border-radius: 1rem;
+                        flex: 1;
+                        border: none;
+
+                        &.enable {
+                            background-color: #4caf50;
+                            color: white;
+                            cursor: pointer;
+                        }
+
+                        &.disabled {
+                            background-color: #f44336;
+                            color: white;
+                            cursor: not-allowed;
+                            pointer-events: none;
+                        }
+                    }
+                }
+
+                p.desc {
+                    font-size: 1.8rem;
+                    margin-bottom: 1rem;
+                    margin-top: 0;
+                }
+
+                div.colors {
+                    display: flex;
+                    gap: 1rem;
+
+                    .dot-color {
+                        width: 4rem;
+                        aspect-ratio: 1 / 1;
+                        border-radius: 50%;
+                        border: 2px solid #000;
+                    }
+                }
+
+                div.sizes {
+                    display: flex;
+                    gap: 1rem;
+
+                    .dot-size {
+                        aspect-ratio: 1 / 1;
+                        width: 4rem;
+                        border-radius: 50%;
+                        border: 2px solid #000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.5rem;
+                    }
+                }
+
+                h1 {
+                    font-size: 3rem;
+                }
+
+                p {
+                    font-size: 1.5rem;
+                    margin-top: 1rem;
+                }
+
+                p.price {
+                    font-weight: bold;
+                    color: #232323;
+                    font-size: 3rem;
+                    margin: 2rem 0;
+                }
+            }
+
+            aside {
+                border-radius: 2rem;
+                overflow: hidden;
+
+                img {
+                    width: 100%;
+                    height: 65rem;
+                    object-fit: cover;
+                }
+            }
+        }
+    </style>
+</Layout>
+
+<script>
+    const buyButton = document.querySelector<HTMLButtonElement>(".buy");
+
+    if (buyButton) {
+        buyButton.onclick = () => {
+            if (buyButton.classList.contains("enable")) {
+                alert("Producto comprado");
+            } else {
+                alert("Producto sin stock");
+            }
+        };
+    }
+</script>

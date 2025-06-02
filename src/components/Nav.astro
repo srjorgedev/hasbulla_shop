@@ -1,0 +1,42 @@
+---
+import Bag from "./svg/Bag.astro";
+
+import CartToggle from "./react/CartToggle";
+---
+
+<nav>
+    <!-- <div class="search-bar">
+			<Search />
+			<input type="text" placeholder="Buscar" />
+		</div> -->
+    <div class="back">
+        <h1>HASBULLA SHOP</h1>
+    </div>
+    <ul>
+        <!-- <li>
+				<div class="nav-button">
+					<User />
+				</div>
+			</li> -->
+        <!-- <li>
+            <div class="nav-button">
+                <Like />
+            </div>
+        </li> -->
+        <li>
+            <CartToggle>
+                <Bag />
+            </CartToggle>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    const back = document.querySelector<HTMLElement>(".back");
+
+    if (back) {
+        back.onclick = () => {
+            window.location.href = "/";
+        };
+    }
+</script>
