@@ -1,9 +1,3 @@
----
-import Bag from "./svg/Bag.astro";
-
-import CartToggle from "./CartToggle.svelte";
----
-
 <nav>
     <!-- <div class="search-bar">
 			<Search />
@@ -25,14 +19,14 @@ import CartToggle from "./CartToggle.svelte";
         </li> -->
         <li></li>
     </ul>
-
-    <script>
-        const back = document.querySelector<HTMLElement>(".back");
-
-        if (back) {
-            back.onclick = () => {
-                window.location.href = "/";
-            };
-        }
-    </script>
 </nav>
+
+<script>
+    const back = document.querySelector<HTMLElement>(".back");
+
+    if (back) {
+        back.onclick = () => {
+            window.location.href = "/";
+        };
+    }
+</script>
